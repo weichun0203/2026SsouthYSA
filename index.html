@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026中南區單成大會｜文宣組專案儀表板</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons (Vanilla Version - More stable for single file usage) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            paper: '#fdfbf7',
+                            ink: '#4a4a4a',
+                            sage: '#8da399',
+                            clay: '#d4a59a',
+                            sand: '#e6e2dd',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Noto Serif TC"', 'serif'],
+                        sans: ['"Noto Sans TC"', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #fdfbf7;
+            color: #4a4a4a;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        
+        /* 模擬紙張紋理 */
+        .bg-texture {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+        }
+
+        .font-serif-heading {
+            font-family: 'Noto Serif TC', serif;
+        }
+
+        /* 自定義滾動條 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fdfbf7; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e6e2dd; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d4a59a; 
+        }
+    </style>
+</head>
+<body class="bg-texture min-h-screen">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // --- Custom Icon Component for Vanilla Lucide ---
+        // This solves the UMD import issues by using the stable vanilla library
+        const Icon = ({ name, className, size = 20 }) => {
+            const spanRef = useRef(null);
+
+            useEffect(() => {
+                if (spanRef.current && window.lucide) {
+                    // Clear previous content
+                    spanRef.current.innerHTML = '';
+                    
+                    // Create the icon element
+                    const iconElement = document.createElement('i');
+                    iconElement.setAttribute('data-lucide', name);
+                    
+                    // Add classes manually if needed, or let parent handle wrapper style
+                    // Here we just put the icon in the span
+                    spanRef.current.appendChild(iconElement);
+
+                    // Trigger Lucide to replace <i> with <svg> inside this specific root
+                    window.lucide.createIcons({
+                        root: spanRef.current,
+                        nameAttr: 'data-lucide',
+                        attrs: {
+                            class: className,
+                            width: size,
+                            height: size
+                        }
+                    });
+                }
+            }, [name, className, size]);
+
+            return <span ref={spanRef} style={{ display: 'inline-flex', alignItems: 'center' }}></span>;
+        };
+
+        // --- Data ---
+        const eventDate = new Date('2026-06-18T00:00:00');
+        
+        const phases = [
+            { id: 1, name: "定調與暖身", period: "1月 - 2月", status: "current", desc: "確立視覺風格，發出 Save the Date" },
+            { id: 2, name: "強力宣傳與報名", period: "3月 - 4月", status: "upcoming", desc: "衝刺報名，釋出活動亮點" },
+            { id: 3, name: "製作與現場準備", period: "5月 - 6月中", status: "upcoming", desc: "實體產出，現場佈置" }
+        ];
+
+        // Updated roles with kebab-case icon names for Vanilla Lucide
+        const teamRoles = [
+            { title: "組長", name: "瑋群", icon: "anchor", task: "專案控管、預算審核、對外溝通" },
+            { title: "社群小編", name: "凱莉", icon: "share-2", task: "IG/FB 經營、限動製作、回覆訊息" },
+            { title: "主視覺設計", name: "待定", icon: "pen-tool", task: "Logo、標準字、主要海報設計" },
+            { title: "周邊排版", name: "待定", icon: "layout", task: "手冊、名牌、T-shirt 排版與完稿" },
+            { title: "文案企劃", name: "待定", icon: "pen-tool", task: "主題文章、講員介紹、潤飾文稿" },
+            { title: "影音多媒體", name: "待定", icon: "video", task: "前導預告、活動攝影、暖場影片" },
+            { title: "總務與輸出", name: "待定", icon: "check-square", task: "廠商詢價、物資管理、印刷發包" },
+        ];
+
+        const initialTasks = {
+            todo: [
+                { id: 1, text: "召開第一次全體會議", tag: "全體" },
+                { id: 2, text: "研讀阿爾瑪書38:5並發想關鍵字", tag: "靈性" },
+                { id: 3, text: "決定主視覺色調與風格", tag: "設計" },
+                { id: 4, text: "獲得IG帳號權限", tag: "社群" },
+                { id: 5, text: "詢問印刷廠手冊與T-shirt規格", tag: "總務" },
+            ],
+            inProgress: [
+                { id: 6, text: "籌備組員名單確認", tag: "行政" },
+            ],
+            done: [
+                { id: 7, text: "接受文宣組長召喚", tag: "個人" }
+            ]
+        };
+
+        const App = () => {
+            const [timeLeft, setTimeLeft] = useState({});
+            
+            useEffect(() => {
+                const timer = setInterval(() => {
+                    const now = new Date();
+                    const difference = eventDate - now;
+                    
+                    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+                    const minutes = Math.floor((difference / 1000 / 60) % 60);
+                    
+                    setTimeLeft({ days, hours, minutes });
+                }, 1000);
+                
+                return () => clearInterval(timer);
+            }, []);
+
+            return (
+                <div className="p-6 md:p-12 max-w-7xl mx-auto">
+                    
+                    {/* Header Section */}
+                    <header className="text-center mb-16 relative">
+                        <div className="inline-block px-4 py-1 mb-4 rounded-full bg-brand-sand/30 text-brand-sage text-sm font-bold tracking-wider uppercase">
+                            2026 YSA Conference
+                        </div>
+                        <h1 className="font-serif-heading text-4xl md:text-5xl lg:text-6xl text-brand-ink mb-4 font-bold">
+                            信賴祂
+                        </h1>
+                        <p className="text-brand-clay font-serif-heading text-lg md:text-xl italic mb-8">
+                            "Trust in God" — Alma 38:5
+                        </p>
+                        
+                        {/* Countdown Card */}
+                        <div className="inline-flex gap-8 bg-white/60 backdrop-blur-sm px-8 py-4 rounded-2xl shadow-soft border border-white">
+                            <div className="text-center">
+                                <span className="block text-3xl font-bold text-brand-sage">{timeLeft.days || 0}</span>
+                                <span className="text-xs text-brand-ink/60 uppercase tracking-widest">Days</span>
+                            </div>
+                            <div className="text-center border-l border-brand-sand pl-8">
+                                <span className="block text-3xl font-bold text-brand-sage">{timeLeft.hours || 0}</span>
+                                <span className="text-xs text-brand-ink/60 uppercase tracking-widest">Hours</span>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Main Grid Layout */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        
+                        {/* Left Column: Timeline & Team (8 cols) */}
+                        <div className="lg:col-span-8 space-y-8">
+                            
+                            {/* Timeline Section */}
+                            <section className="bg-white rounded-3xl p-8 shadow-soft border border-brand-sand/30">
+                                <div className="flex items-center justify-between mb-6">
+                                    <h2 className="font-serif-heading text-2xl text-brand-ink flex items-center gap-2">
+                                        <Icon name="calendar" className="text-brand-clay" />
+                                        專案時程
+                                    </h2>
+                                    <span className="text-xs text-brand-sage font-bold px-2 py-1 bg-brand-sage/10 rounded">Phase 1 進行中</span>
+                                </div>
+                                <div className="space-y-6">
+                                    {phases.map((phase, idx) => (
+                                        <div key={phase.id} className={`relative pl-8 border-l-2 ${phase.status === 'current' ? 'border-brand-clay' : 'border-brand-sand'}`}>
+                                            <span className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 bg-white ${phase.status === 'current' ? 'border-brand-clay animate-pulse' : 'border-brand-sand'}`}></span>
+                                            <div className="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-1">
+                                                <span className="text-lg font-bold text-brand-ink">{phase.name}</span>
+                                                <span className="text-sm text-brand-sage font-medium">{phase.period}</span>
+                                            </div>
+                                            <p className="text-sm text-brand-ink/70">{phase.desc}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
+
+                            {/* Team Roles Section */}
+                            <section>
+                                <div className="flex items-center justify-between mb-6">
+                                    <h2 className="font-serif-heading text-2xl text-brand-ink flex items-center gap-2">
+                                        <Icon name="users" className="text-brand-clay" />
+                                        團隊分工 (7人編制)
+                                    </h2>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {teamRoles.map((role, index) => (
+                                        <div key={index} className="bg-white p-5 rounded-2xl shadow-soft border border-brand-sand/30 hover:border-brand-sage/50 transition-all duration-300 group">
+                                            <div className="flex items-start justify-between mb-3">
+                                                <div className="p-2 bg-brand-paper rounded-lg text-brand-sage group-hover:text-brand-clay transition-colors">
+                                                    <Icon name={role.icon} size={20} />
+                                                </div>
+                                                {/* Modified: Changed text color for better visibility */}
+                                                <span className="text-xs font-bold text-white bg-brand-clay px-2 py-1 rounded-full shadow-sm">
+                                                    {role.name}
+                                                </span>
+                                            </div>
+                                            <h3 className="font-bold text-brand-ink mb-1">{role.title}</h3>
+                                            <p className="text-xs text-brand-ink/60 leading-relaxed">{role.task}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
+
+                        </div>
+
+                        {/* Right Column: Tasks & Status (4 cols) */}
+                        <div className="lg:col-span-4 flex flex-col gap-8">
+                            
+                            {/* Quick Stats */}
+                            <div className="grid grid-cols-2 gap-4 shrink-0">
+                                <div className="bg-brand-sage/10 p-6 rounded-2xl text-center">
+                                    <span className="block text-2xl font-bold text-brand-sage mb-1">5.5</span>
+                                    <span className="text-xs text-brand-ink/60 uppercase">Months Left</span>
+                                </div>
+                                <div className="bg-brand-clay/10 p-6 rounded-2xl text-center">
+                                    <span className="block text-2xl font-bold text-brand-clay mb-1">0%</span>
+                                    <span className="text-xs text-brand-ink/60 uppercase">Budget Used</span>
+                                </div>
+                            </div>
+
+                            {/* Kanban Board (Mini) */}
+                            <section className="bg-white rounded-3xl p-6 shadow-soft border border-brand-sand/30 flex-1 flex flex-col">
+                                <div className="flex items-center gap-2 mb-6 shrink-0">
+                                    <Icon name="check-square" className="text-brand-clay" />
+                                    <h2 className="font-serif-heading text-xl text-brand-ink">初期任務清單</h2>
+                                </div>
+
+                                <div className="space-y-6 overflow-y-auto flex-1 pr-2 custom-scrollbar">
+                                    {/* Todo Column */}
+                                    <div>
+                                        <h3 className="text-xs font-bold text-brand-ink/40 uppercase tracking-widest mb-3 flex items-center justify-between sticky top-0 bg-white z-10 py-2">
+                                            To Do <span className="bg-brand-sand/30 px-2 rounded-full text-brand-ink/60">{initialTasks.todo.length}</span>
+                                        </h3>
+                                        <div className="space-y-3">
+                                            {initialTasks.todo.map(task => (
+                                                <div key={task.id} className="bg-brand-paper p-3 rounded-xl border border-brand-sand/20 hover:shadow-md transition-shadow cursor-pointer">
+                                                    <p className="text-sm text-brand-ink mb-2">{task.text}</p>
+                                                    <span className="text-[10px] font-bold text-brand-sage bg-white px-2 py-0.5 rounded border border-brand-sand/50">{task.tag}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    
+                                    {/* In Progress */}
+                                    <div>
+                                        <h3 className="text-xs font-bold text-brand-ink/40 uppercase tracking-widest mb-3 flex items-center justify-between sticky top-0 bg-white z-10 py-2">
+                                            In Progress <span className="bg-brand-sage/20 px-2 rounded-full text-brand-sage">{initialTasks.inProgress.length}</span>
+                                        </h3>
+                                         <div className="space-y-3">
+                                            {initialTasks.inProgress.map(task => (
+                                                <div key={task.id} className="bg-white p-3 rounded-xl border-l-4 border-brand-sage shadow-sm">
+                                                    <p className="text-sm text-brand-ink mb-2">{task.text}</p>
+                                                    <span className="text-[10px] font-bold text-brand-sage bg-brand-paper px-2 py-0.5 rounded">{task.tag}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                    {/* Footer */}
+                    <footer className="mt-16 text-center border-t border-brand-sand/30 pt-8">
+                        <p className="text-sm text-brand-ink/40">
+                            2026 中南區單成大會文宣組
+                        </p>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
