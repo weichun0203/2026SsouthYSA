@@ -77,6 +77,20 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #d4a59a; 
         }
+
+        /* 3D Flip Utility Classes */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
     </style>
 </head>
 <body class="bg-texture min-h-screen">
@@ -87,24 +101,15 @@
         const { useState, useEffect, useRef } = React;
 
         // --- Custom Icon Component for Vanilla Lucide ---
-        // This solves the UMD import issues by using the stable vanilla library
         const Icon = ({ name, className, size = 20 }) => {
             const spanRef = useRef(null);
 
             useEffect(() => {
                 if (spanRef.current && window.lucide) {
-                    // Clear previous content
                     spanRef.current.innerHTML = '';
-                    
-                    // Create the icon element
                     const iconElement = document.createElement('i');
                     iconElement.setAttribute('data-lucide', name);
-                    
-                    // Add classes manually if needed, or let parent handle wrapper style
-                    // Here we just put the icon in the span
                     spanRef.current.appendChild(iconElement);
-
-                    // Trigger Lucide to replace <i> with <svg> inside this specific root
                     window.lucide.createIcons({
                         root: spanRef.current,
                         nameAttr: 'data-lucide',
@@ -129,15 +134,85 @@
             { id: 3, name: "製作與現場準備", period: "5月 - 6月中", status: "upcoming", desc: "實體產出，現場佈置" }
         ];
 
-        // Updated roles with kebab-case icon names for Vanilla Lucide
-        const teamRoles = [
-            { title: "組長", name: "瑋群", icon: "anchor", task: "專案控管、預算審核、對外溝通" },
-            { title: "社群小編", name: "凱莉", icon: "share-2", task: "IG/FB 經營、限動製作、回覆訊息" },
-            { title: "主視覺設計", name: "待定", icon: "pen-tool", task: "Logo、標準字、主要海報設計" },
-            { title: "周邊排版", name: "待定", icon: "layout", task: "手冊、名牌、T-shirt 排版與完稿" },
-            { title: "文案企劃", name: "待定", icon: "pen-tool", task: "主題文章、講員介紹、潤飾文稿" },
-            { title: "影音多媒體", name: "待定", icon: "video", task: "前導預告、活動攝影、暖場影片" },
-            { title: "總務與輸出", name: "待定", icon: "check-square", task: "廠商詢價、物資管理、印刷發包" },
+        // New Grouped Team Data with Intros
+        const teamGroups = [
+            {
+                id: "leader",
+                title: "美宣負責人",
+                subtitle: "組長：瑋群",
+                roles: [
+                    { 
+                        title: "組長", 
+                        name: "瑋群", 
+                        icon: "anchor", 
+                        task: "專案控管、預算審核、對外溝通",
+                        intro: "我是桃園龜山支會的瑋群 aka 時區獨立運作暨時間相對論實踐者。\n\n加入文宣組的原因是因為去年被抓去，今年被抓來，當組長也是逼不得已(?)。\n\n我想服務的領域最主要想讓大家在這次大會都可以有收穫然後不要熬夜趕稿!!!\n\n技能的話AI/PS都會用/比較常規劃進度和當支援型角色，如果大家甚麼需要幫忙的請一定要跟我說!"
+                    }
+                ]
+            },
+            {
+                id: "social",
+                title: "社群經營",
+                subtitle: "組長：凱莉",
+                roles: [
+                    { 
+                        title: "社群小編", 
+                        name: "凱莉", 
+                        icon: "share-2", 
+                        task: "IG/FB 經營、限動製作、回覆訊息",
+                        intro: "我是凱莉！苗栗支會的～\n\n我的興趣是攝影、看電影。\n\n這次會是幫忙IG宣傳的部分，因為平常很喜歡拍片，也很喜歡看很多有創意的reels 💗大家請多指教！"
+                    },
+                    { 
+                        title: "影音多媒體", 
+                        name: "瑞杏", 
+                        icon: "video", 
+                        task: "前導預告、活動攝影、暖場影片",
+                        intro: "哈囉 我是林口支會的王姐妹。\n\n剛返鄉還在習慣這個社會，會製作一些基本的文宣設計（AI/PS）、簡單的剪輯、喜歡畫畫的宅宅。\n\n但因為工作和備考的關係，訊息看比較慢，未來會儘量排出時間幫忙，謝謝大家的服務！"
+                    },
+                    { 
+                        title: "文案企劃", 
+                        name: "家齊", 
+                        icon: "pen-tool", 
+                        task: "主題文章、講員介紹、潤飾文稿",
+                        intro: "大家好，我是士林支會的吳家齊，是個剛滿18歲喜歡動漫和畫畫的宅宅。\n\n被抓來的，想說可以增加一些經驗好像不錯。\n\n當工作人員是第一次所以沒有經驗，但願意學習~"
+                    }
+                ]
+            },
+            {
+                id: "design",
+                title: "主視覺設計",
+                subtitle: "組長：易蓁",
+                roles: [
+                    { 
+                        title: "主視覺設計", 
+                        name: "易蓁", 
+                        icon: "pen-tool", 
+                        task: "Logo、標準字、主要海報設計",
+                        intro: "嗨嗨 我是天母支會的李易蓁！是一個喜歡在家看漫畫看動漫 喜歡跑咖看展覽的人。\n\n會加入文宣組的原因現在想不起來了（就是問 剛好有空就來）。\n\n比較擅長使用ai/ps做平面排版～"
+                    },
+                    { 
+                        title: "周邊排版", 
+                        name: "家綾", 
+                        icon: "layout", 
+                        task: "手冊、名牌、T-shirt 排版與完稿",
+                        intro: "大家好我是家綾，新北淡水支會的成員。喜歡設計和畫畫。\n\n加入原因覺得可以和大家一起工作很棒！\n\n比較擅長Ai/PS，但我的電腦沒有這些軟體😅，如果需要幫忙設計部分我也可以用canva，謝謝～"
+                    }
+                ]
+            },
+            {
+                id: "admin",
+                title: "印刷行政",
+                subtitle: "組長：鐿臻",
+                roles: [
+                    { 
+                        title: "總務與輸出", 
+                        name: "鐿臻", 
+                        icon: "check-square", 
+                        task: "廠商詢價、物資管理、印刷發包",
+                        intro: "我是新北土城支會的鐿臻 aka遇到可愛的東西很有動力但其他事有點小拖延症的角落小I人。\n\n加入文宣組的原因是好久沒參加單成大會，但為了挺總召只好捨命陪君子。\n\n我這次想服務的領域：這是我第一次進美宣組，只要不會拖大家後腿，我都可以。P.s. 一月是加班月，希望可以擠多一點時間來美宣，我會努力的！\n\n技能：學過AI/PS,但平常都只是簡單設計支會小活動的海報。\n\n很開心可以跟大家一起服務跟學習。"
+                    }
+                ]
+            }
         ];
 
         const initialTasks = {
@@ -154,6 +229,97 @@
             done: [
                 { id: 7, text: "接受文宣組長召喚", tag: "個人" }
             ]
+        };
+
+        // --- Team Card Component (Handles Flip Logic) ---
+        const TeamCard = ({ role }) => {
+            const [isFlipped, setIsFlipped] = useState(false);
+
+            return (
+                <div 
+                    className="group perspective-1000 w-full h-48 cursor-pointer"
+                    onClick={() => setIsFlipped(!isFlipped)}
+                >
+                    <div className={`relative w-full h-full transition-all duration-500 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
+                        
+                        {/* Front Face */}
+                        <div className="absolute w-full h-full backface-hidden">
+                            <div className="h-full bg-brand-paper/50 p-4 rounded-xl border border-brand-sand/20 flex flex-col hover:border-brand-sage/30 transition-colors shadow-sm">
+                                <div className="flex items-start justify-between mb-2">
+                                    <div className="flex items-center gap-2">
+                                        <div className="p-1.5 bg-white rounded-lg text-brand-sage shadow-sm border border-brand-sand/10">
+                                            <Icon name={role.icon} size={16} />
+                                        </div>
+                                        <h4 className="font-bold text-brand-ink text-sm">{role.title}</h4>
+                                    </div>
+                                    <span className={`text-xs font-bold px-2 py-1 rounded-full ${role.name === '待定' ? 'bg-brand-sand/30 text-brand-ink/40' : 'bg-brand-sage/20 text-brand-sage'}`}>
+                                        {role.name}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-brand-ink/60 leading-relaxed pl-1">{role.task}</p>
+                                <div className="mt-auto text-center pt-2 border-t border-brand-sand/10">
+                                    <span className="text-[10px] text-brand-clay font-medium opacity-0 group-hover:opacity-100 transition-opacity">點擊看介紹</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Back Face - Updated Layout to Fix Overlap */}
+                        <div className="absolute w-full h-full backface-hidden rotate-y-180">
+                            <div className="h-full bg-brand-sage/10 rounded-xl border border-brand-sage/20 shadow-inner flex flex-col overflow-hidden">
+                                {/* Header - Fixed at top with background */}
+                                <div className="flex items-center justify-between p-3 pb-2 bg-white/40 backdrop-blur-sm border-b border-brand-sage/10 shrink-0">
+                                    <h4 className="font-bold text-brand-sage text-sm">{role.name} 的介紹</h4>
+                                    <Icon name="rotate-ccw" size={14} className="text-brand-sage/50" />
+                                </div>
+                                {/* Content - Scrollable area */}
+                                <div className="overflow-y-auto custom-scrollbar p-3 pt-2 flex-1">
+                                    <p className="text-xs text-brand-ink/80 leading-relaxed whitespace-pre-wrap">
+                                        {role.intro || "尚未提供自我介紹。"}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Team Accordion Component ---
+        const TeamCategory = ({ group, defaultOpen = false }) => {
+            const [isOpen, setIsOpen] = useState(defaultOpen);
+
+            return (
+                <div className="bg-white rounded-2xl shadow-soft border border-brand-sand/30 overflow-hidden mb-4 transition-all duration-300">
+                    <button
+                        onClick={() => setIsOpen(!isOpen)}
+                        className={`w-full flex items-center justify-between p-5 hover:bg-brand-paper transition-colors ${isOpen ? 'bg-brand-paper/50' : 'bg-white'}`}
+                    >
+                        <div className="flex items-center gap-3">
+                            <h3 className="font-bold text-lg text-brand-ink flex items-center gap-2">
+                                {group.title}
+                            </h3>
+                            {group.subtitle && (
+                                <span className="text-xs font-bold text-white bg-brand-clay px-2 py-1 rounded-full shadow-sm">
+                                    {group.subtitle}
+                                </span>
+                            )}
+                        </div>
+                        <div className={`text-brand-sage transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+                            <Icon name="chevron-down" size={20} />
+                        </div>
+                    </button>
+
+                    {/* Animated Content Wrapper */}
+                    <div className={`grid grid-cols-1 gap-0 bg-white border-t border-brand-sand/20 transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[800px] opacity-100 p-4' : 'max-h-0 opacity-0 p-0 overflow-hidden'}`}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {group.roles.map((role, idx) => (
+                                <TeamCard key={idx} role={role} />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
         };
 
         const App = () => {
@@ -182,12 +348,22 @@
                         <div className="inline-block px-4 py-1 mb-4 rounded-full bg-brand-sand/30 text-brand-sage text-sm font-bold tracking-wider uppercase">
                             2026 YSA Conference
                         </div>
-                        <h1 className="font-serif-heading text-4xl md:text-5xl lg:text-6xl text-brand-ink mb-4 font-bold">
+                        <h1 className="font-serif-heading text-4xl md:text-5xl lg:text-6xl text-brand-ink mb-3 font-bold">
                             信賴祂
                         </h1>
-                        <p className="text-brand-clay font-serif-heading text-lg md:text-xl italic mb-8">
+                        <p className="text-brand-clay font-serif-heading text-lg md:text-xl italic mb-6">
                             "Trust in God" — Alma 38:5
                         </p>
+
+                        {/* Added Scripture */}
+                        <div className="max-w-3xl mx-auto mb-10 px-4">
+                            <p className="text-brand-ink/80 font-serif-heading text-md md:text-lg leading-loose relative">
+                                <span className="absolute -left-4 -top-2 text-4xl text-brand-sand opacity-50">“</span>
+                                我兒希伯隆，希望你記住，你信賴神的程度有多少，你從考驗、災禍和苦難中得救，以及在末日被高舉的程度就有多少。
+                                <span className="absolute -right-4 bottom-4 text-4xl text-brand-sand opacity-50 hidden md:inline">”</span>
+                            </p>
+                            <p className="text-brand-sage font-bold text-sm mt-3 tracking-wide">— 阿爾瑪書 38：5</p>
+                        </div>
                         
                         {/* Countdown Card */}
                         <div className="inline-flex gap-8 bg-white/60 backdrop-blur-sm px-8 py-4 rounded-2xl shadow-soft border border-white">
@@ -207,6 +383,22 @@
                         
                         {/* Left Column: Timeline & Team (8 cols) */}
                         <div className="lg:col-span-8 space-y-8">
+
+                            {/* New Theme Section */}
+                            <section className="bg-gradient-to-br from-brand-sage/10 to-brand-paper rounded-3xl p-8 border border-brand-sage/20 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-brand-clay/10 rounded-full blur-2xl"></div>
+                                <div className="relative z-10">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="p-2 bg-white rounded-full text-brand-clay shadow-sm">
+                                            <Icon name="heart" size={20} />
+                                        </div>
+                                        <h2 className="font-serif-heading text-xl text-brand-ink font-bold tracking-wide">大會主旨</h2>
+                                    </div>
+                                    <p className="text-xl md:text-2xl text-brand-ink font-serif-heading font-bold leading-relaxed pl-2 border-l-4 border-brand-clay/50">
+                                        讓參與者信賴神的安排，勇敢的去選擇對的事情
+                                    </p>
+                                </div>
+                            </section>
                             
                             {/* Timeline Section */}
                             <section className="bg-white rounded-3xl p-8 shadow-soft border border-brand-sand/30">
@@ -231,29 +423,18 @@
                                 </div>
                             </section>
 
-                            {/* Team Roles Section */}
+                            {/* Team Roles Section (Refactored to Accordion) */}
                             <section>
                                 <div className="flex items-center justify-between mb-6">
                                     <h2 className="font-serif-heading text-2xl text-brand-ink flex items-center gap-2">
                                         <Icon name="users" className="text-brand-clay" />
-                                        團隊分工 (7人編制)
+                                        團隊分工 (四大組別)
                                     </h2>
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {teamRoles.map((role, index) => (
-                                        <div key={index} className="bg-white p-5 rounded-2xl shadow-soft border border-brand-sand/30 hover:border-brand-sage/50 transition-all duration-300 group">
-                                            <div className="flex items-start justify-between mb-3">
-                                                <div className="p-2 bg-brand-paper rounded-lg text-brand-sage group-hover:text-brand-clay transition-colors">
-                                                    <Icon name={role.icon} size={20} />
-                                                </div>
-                                                {/* Modified: Changed text color for better visibility */}
-                                                <span className="text-xs font-bold text-white bg-brand-clay px-2 py-1 rounded-full shadow-sm">
-                                                    {role.name}
-                                                </span>
-                                            </div>
-                                            <h3 className="font-bold text-brand-ink mb-1">{role.title}</h3>
-                                            <p className="text-xs text-brand-ink/60 leading-relaxed">{role.task}</p>
-                                        </div>
+                                
+                                <div className="space-y-2">
+                                    {teamGroups.map((group, index) => (
+                                        <TeamCategory key={group.id} group={group} defaultOpen={true} />
                                     ))}
                                 </div>
                             </section>
