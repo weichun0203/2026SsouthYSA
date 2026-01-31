@@ -217,17 +217,34 @@
 
         const initialTasks = {
             todo: [
-                { id: 1, text: "召開第一次全體會議", tag: "全體" },
-                { id: 2, text: "研讀阿爾瑪書38:5並發想關鍵字", tag: "靈性" },
                 { id: 3, text: "決定主視覺色調與風格", tag: "設計" },
-                { id: 4, text: "獲得IG帳號權限", tag: "社群" },
                 { id: 5, text: "詢問印刷廠手冊與T-shirt規格", tag: "總務" },
+                // New Tasks from User
+                { id: 8, text: "設計開幕與閉幕背景", tag: "活動支援" },
+                { id: 9, text: "手環設計 (粉色: 260普+15特)", tag: "活動支援" },
+                { id: 10, text: "製作宣導影片", tag: "活動支援" },
+                { id: 11, text: "設計9款貼紙商品", tag: "活動支援" },
             ],
             inProgress: [
-                { id: 6, text: "籌備組員名單確認", tag: "行政" },
+                { id: 12, text: "LOGO草圖繪製", tag: "設計" },
             ],
             done: [
-                { id: 7, text: "接受文宣組長召喚", tag: "個人" }
+                { id: 7, text: "接受文宣組長召喚", tag: "個人" },
+                { id: 6, text: "籌備組員名單確認 (1/18 完成)", tag: "行政" },
+                { 
+                    id: 1, 
+                    text: "召開第一次全體會議 (1/29 完成)", 
+                    tag: "全體",
+                    link: "https://www.figma.com/board/xN5RLWUBXnM6kWpHfbmun0/Untitled?node-id=8-155&t=WC3xekvEqdafIx0i-1",
+                    linkText: "查看 Figma 會議記錄"
+                },
+                { id: 2, text: "研讀阿爾瑪書38:5並發想關鍵字 (1/29 完成)", tag: "靈性" },
+                { 
+                    id: 4, 
+                    text: "獲得IG帳號權限 (1/30 完成)", 
+                    tag: "社群",
+                    note: "帳號: tw_ysac / 密碼: findourselves"
+                },
             ]
         };
 
@@ -493,6 +510,40 @@
                                             ))}
                                         </div>
                                     </div>
+
+                                    {/* Done (Newly added to show completed tasks) */}
+                                    <div>
+                                        <h3 className="text-xs font-bold text-brand-ink/40 uppercase tracking-widest mb-3 flex items-center justify-between sticky top-0 bg-white z-10 py-2">
+                                            Done <span className="bg-brand-clay/20 px-2 rounded-full text-brand-clay">{initialTasks.done.length}</span>
+                                        </h3>
+                                         <div className="space-y-3">
+                                            {initialTasks.done.map(task => (
+                                                <div key={task.id} className="bg-brand-paper/50 p-3 rounded-xl border border-brand-sand/10 opacity-80 hover:opacity-100 transition-opacity">
+                                                    <div className="flex items-start gap-2">
+                                                        <div className="mt-0.5 text-brand-sage"><Icon name="check-circle" size={14} /></div>
+                                                        <div className="flex-1">
+                                                            <p className="text-sm text-brand-ink/70 line-through mb-1 decoration-brand-sage/50">{task.text}</p>
+                                                            <div className="flex flex-wrap gap-2 items-center">
+                                                                <span className="text-[10px] font-bold text-brand-ink/40 bg-brand-sand/20 px-2 py-0.5 rounded">{task.tag}</span>
+                                                                {task.link && (
+                                                                    <a href={task.link} target="_blank" className="text-[10px] text-brand-clay hover:underline flex items-center gap-1">
+                                                                        <Icon name="link" size={10} />
+                                                                        {task.linkText || "連結"}
+                                                                    </a>
+                                                                )}
+                                                            </div>
+                                                            {task.note && (
+                                                                <p className="text-[10px] text-brand-ink/50 mt-1 bg-white/50 p-1.5 rounded border border-brand-sand/10 select-all font-mono">
+                                                                    {task.note}
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
                                 </div>
                             </section>
                         </div>
